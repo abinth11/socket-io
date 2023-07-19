@@ -34,9 +34,13 @@ const socketConfig = (
         socket.emit("response_data", data);
       });
 
-      socket.on("join_room", (courseId: string) => {
-        socket.join(courseId);
-        console.log(`User ${socket.id} joined room ${courseId}`);
+      socket.on('send_message',(data)=>{
+       console.log(data)
+        })
+
+      socket.on("join_room", (userId: string) => {
+        socket.join(userId);
+        console.log(`User ${socket.id} joined room ${userId}`);
       });
 
       socket.on("disconnect", () => {

@@ -22,7 +22,7 @@ const io = new Server<
   SocketData
 >(server, {
   cors: {
-    origin: config.SOCKET_PORT,
+    origin: "http://127.0.0.1:5173/",
     methods: ["GET", "POST"],
   },
 });

@@ -1,12 +1,22 @@
+import { useEffect } from "react";
 import "./App.css";
-import User from "./components/User";
-import Join from "./components/Join";
+import {Outlet} from 'react-router-dom'
+import socket from "./socket/socket";
 
 function App() {
+
+  useEffect(() => {
+    // Event listeners
+    socket.connect();
+
+    // Cleanup function
+    return () => {
+      socket.disconnect(); // Disconnect the socket when the component unmounts
+    };
+  }, []);
   return (
     <div className='app'>
-      <Join/>
-      <User />
+      <Outlet/>
     </div>
   );
 }

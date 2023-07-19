@@ -14,6 +14,8 @@ const socketConfig = (
     SocketData
   >
 ) => {
+  const socketRoomMap = new Map<Socket, string>(); // Create a Map to store socket-room mappings
+
   io.on(
     "connection",
     (
@@ -25,26 +27,29 @@ const socketConfig = (
       >
     ) => {
       console.log(`User connected: ${socket.id}`);
-      // sendProgress();
-      socket.on("request_data", () => {
-        // Process your data retrieval logic here
-        const data = { message: "Hello from the server!" };
 
-        // Emit a custom event with the data
+      socket.on("request_data", () => {
+        const data = { message: "Hello from the server!" };
         socket.emit("response_data", data);
       });
 
-      socket.on('send_message',(data)=>{
-       console.log(data)
-        })
+      socket.on("send_message", (data) => {
+        console.log(data);
+        const roomId = socketRoomMap.get(socket); // Retrieve the room ID from the Map
+        if (roomId) {
+          io.to(roomId).emit("receive_message", data); // Broadcast the message to all sockets in the room
+        }
+      });
 
-      socket.on("join_room", (userId: string) => {
-        socket.join(userId);
-        console.log(`User ${socket.id} joined room ${userId}`);
+      socket.on("join_room", (roomId: string) => {
+        socket.join(roomId);
+        socketRoomMap.set(socket, roomId); // Store the room ID in the Map
+        console.log(`User ${socket.id} joined room ${roomId}`);
       });
 
       socket.on("disconnect", () => {
         console.log(`User disconnected: ${socket.id}`);
+        socketRoomMap.delete(socket); // Remove the socket from the Map upon disconnection
       });
     }
   );
